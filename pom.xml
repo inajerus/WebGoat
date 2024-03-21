@@ -645,7 +645,7 @@
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
-      <build>
+      <build>             
         <plugins>
           <plugin>
             <groupId>org.owasp</groupId>
