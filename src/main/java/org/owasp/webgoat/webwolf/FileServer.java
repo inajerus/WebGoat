@@ -72,24 +72,15 @@ public class FileServer {
 
   @PostMapping(value = "/fileupload")
   public ModelAndView importFile(@RequestParam("file") MultipartFile myFile) throws IOException {
-      WebGoatUser user =
-              (WebGoatUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      String username = user.getUsername();
+    var user = (WebGoatUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    var destinationDir = new File(fileLocation, user.getUsername());
+    destinationDir.mkdirs();
+    myFile.transferTo(new File(destinationDir, myFile.getOriginalFilename()));
+    log.debug("File saved to {}", new File(destinationDir, myFile.getOriginalFilename()));
 
-      String originalFilename = myFile.getOriginalFilename();
-      String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-      String generatedFileName = generateUniqueFileName(extension);
-
-      File destinationDir = new File(fileLocation, username);
-      destinationDir.mkdirs();
-
-      File destinationFile = new File(destinationDir, generatedFileName);
-      myFile.transferTo(destinationFile);
-      log.debug("File saved to {}", destinationFile.getAbsolutePath());
-
-      return new ModelAndView(
-              new RedirectView("files", true),
-              new ModelMap().addAttribute("uploadSuccess", "File uploaded successfully"));
+    return new ModelAndView(
+        new RedirectView("files", true),
+        new ModelMap().addAttribute("uploadSuccess", "File uploaded successful"));
   }
 
   @AllArgsConstructor
@@ -129,8 +120,4 @@ public class FileServer {
     modelAndView.addObject("webwolf_url", "http://" + server + ":" + port);
     return modelAndView;
   }
-    private String generateUniqueFileName(String extension) {
-        return java.util.UUID.randomUUID().toString() + extension;
-    }
 }
-
