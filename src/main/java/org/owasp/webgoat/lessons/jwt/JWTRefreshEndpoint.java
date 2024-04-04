@@ -59,7 +59,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class JWTRefreshEndpoint extends AssignmentEndpoint {
 
   public static final String PASSWORD = "bm5nhSkxCXZkKRy4";
-  private static final String JWT_PASSWORD = "bm5n3SkxCX4kKRy4";
+  private static final String JWT_PASSWORD = System.getenv("SECRET");
   private static final List<String> validRefreshTokens = new ArrayList<>();
 
   @PostMapping(
@@ -134,7 +134,7 @@ public class JWTRefreshEndpoint extends AssignmentEndpoint {
     String refreshToken;
     try {
       Jwt<Header, Claims> jwt =
-          Jwts.parser().setSigningKey(JWT_PASSWORD).parse(token.replace("Bearer ", ""));
+              Jwts.parser().setSigningKey(JWT_PASSWORD).parse(token.replace("Bearer ", ""));
       user = (String) jwt.getBody().get("user");
       refreshToken = (String) json.get("refresh_token");
     } catch (ExpiredJwtException e) {
